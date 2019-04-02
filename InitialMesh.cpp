@@ -347,7 +347,7 @@ int main(){
 	vector<Vertex> vertices;
 	vector<Edge> edg;
 	vector<Triangle> trgl;
-
+//Reading initial mesh from  GMSH file
 	ifstream inFile;
 	inFile.open("Mesh.txt");
 	if(!inFile.is_open()){
