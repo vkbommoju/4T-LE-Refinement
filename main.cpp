@@ -523,9 +523,9 @@ int main(){
 						}
 						
 						//Updating oppVertices of old edges
-						edg[w[0]].clearOppVertex(longEdge.getVertex1());
+						edg[w[0]].clearOppVertex(longEdge.getVertex2());
 						edg[w[0]].addOppVertices(longVer);
-						edg[w[1]].clearOppVertex(longEdge.getVertex2());
+						edg[w[1]].clearOppVertex(longEdge.getVertex1());
 						edg[w[1]].addOppVertices(longVer);
 						//Incrementing count as the longEdge has been used by this triangle
 						edg[n[0][0]].incrementCount();
