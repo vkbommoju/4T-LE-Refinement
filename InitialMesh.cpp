@@ -812,11 +812,88 @@ int main() {
 		}
 		cout << "\n";
 	}
-
+	
+	
 	/*for(int k=0;k<trgl.size();k++){
 		vector<Vertex> ver=trgl[k].getVertices();
 		for(int j=0;j<3;j++){
 			cout<<ver[j].getX()<<"\t"<<ver[j].getY()<<"\n";
 		}
 	}*/
+	
+	//Writing refined mesh in the gmsh format
+	ofstream newMesh;
+	newMesh.open("newMesh.txt"); 
+
+	//Writing mesh format to newMesh.txt file
+	newMesh<<"$MeshFormat"<<"\n"<<"2.2 0 8"<<"\n"<<"$EndMeshFormat"<<"\n";
+	
+	//Creating node list without duplicate nodes
+	vector<Vertex> node_list;
+	cout<<"creating nodes in gmesh format"<<endl;
+	for(int k=0;k<edg.size();k++){
+		Vertex v1(edg[k].getVertex1());
+		Vertex v2(edg[k].getVertex2());
+
+		int flag1=0,flag2=0;
+		for(int nl=0;nl<node_list.size();nl++){
+			if(v1.equals(node_list[nl])){//vertex v1 exist in node_list
+				flag1=1;
+			}
+			if(v2.equals(node_list[nl])){//vertex v2 exist in node_list
+				flag2=1;
+			}
+			}
+		if(flag1==0){
+			node_list.push_back(v1);
+		}
+
+		if(flag2==0){
+			node_list.push_back(v2);
+		}
+		}
+
+	//Writing node list to newMesh.txt file
+	newMesh<<"$Nodes"<<endl;
+	newMesh<<node_list.size()<<endl;
+	for(int k=0;k<node_list.size();k++){
+		newMesh<<k+1<<" "<<node_list[k].getX()<<" "<<node_list[k].getY()<<" "<<"0"<<endl;
+	}
+	newMesh<<"$EndNodes"<<endl;
+
+	//Writing Edges list to newMesh.txt file
+	newMesh<<"$Elements"<<endl;
+	newMesh<<edg.size()+trgl.size()<<endl;
+	for(int k=0;k<edg.size();k++){
+		int first,second;
+		for(int nl=0;nl<node_list.size();nl++){
+			if(edg[k].getVertex1().equals(node_list[nl])){
+				first=nl+1;
+			}
+			if(edg[k].getVertex2().equals(node_list[nl])){
+				second=nl+1;
+			}	
+		}
+		newMesh<<k+1<<" "<<1<<" "<<" "<<2<<" "<<edg[k].getType()<<" "<<10<<" "<<first<<" "<<second<<endl;
+	}
+
+	//Writing Triangle list to newMesh.txt file
+	for(int k=0;k<trgl.size();k++){
+		int first, second,third;
+		vector<Vertex> trglVertices=trgl[k].getVertices();
+		for(int nl=0;nl<node_list.size();nl++){
+			if(trglVertices[0].equals(node_list[nl])){
+				first=nl+1;
+			}
+			if(trglVertices[1].equals(node_list[nl])){
+				second=nl+1;
+			}	
+			if(trglVertices[2].equals(node_list[nl])){
+				third=nl+1;
+			}	
+		}
+		newMesh<<k+edg.size()+1<<" "<<2<<" "<<2<<" "<<5<<" "<<1<<" "<<first<<" "<<second<<" "<<third<<endl; 
+	}
+	newMesh<<"#EndElements"<<endl;
+
 }
